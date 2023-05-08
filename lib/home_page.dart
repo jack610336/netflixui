@@ -1,7 +1,10 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:netflix/movie_card.dart';
 import 'package:netflix/recemtly_add.dart';
 import 'package:palette_generator/palette_generator.dart';
+
+import 'custom_app_bar.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -12,6 +15,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   Color dominantColor = Colors.white;
+  final ScrollController _controller1 = ScrollController();
 
   @override
   void initState() {
@@ -31,198 +35,137 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  int _selectedIndex = 0;
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: dominantColor,
-      body: CustomScrollView(
-        slivers: [
-          SliverPersistentHeader(
-            pinned: true,
-            delegate: CustomSliverAppBarDelegate(dominantColor: dominantColor),
-          ),
-          SliverList(
-            delegate: SliverChildBuilderDelegate(
-              childCount: 1,
-              (BuildContext context, int index) {
-                return Container(
-                  color: dominantColor,
-                  child: Padding(
-                    padding: EdgeInsets.all(20.0),
-                    child: MovieCardW(),
-                  ),
-                );
-              },
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Padding(
-              padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
-              child: Text('Popular on Netflix',
-                  style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold)),
-            ),
-          ),
-          SliverToBoxAdapter(
-            child: Container(
-              width: double.infinity,
-              height: MediaQuery.of(context).size.height / 5,
-              child: CustomScrollView(
-                scrollDirection: Axis.horizontal,
-                slivers: [
-                  SliverList(
-                    delegate: SliverChildBuilderDelegate(
-                      (context, index) {
-                        return Padding(
-                            padding: EdgeInsets.only(
-                                top: 0, bottom: 0, left: 16, right: 8),
-                            child: RecentlyAdd(
-                              imgPath: 'images/cv0${index + 1}.jpeg',
-                            ));
-                      },
-                      childCount: 7,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+              icon: Icon(
+                  (_selectedIndex == 0) ? Icons.home : Icons.home_outlined),
+              label: 'Home'),
+          BottomNavigationBarItem(
+              icon: Icon((_selectedIndex == 1)
+                  ? Icons.local_play_rounded
+                  : Icons.local_play_outlined),
+              label: 'New & Hot'),
+          BottomNavigationBarItem(
+              icon: Icon((_selectedIndex == 2)
+                  ? Icons.download_for_offline
+                  : Icons.download_for_offline_outlined),
+              label: 'Downloads'),
+          // BottomNavigationBarItem(
+          //     icon: Icon(Icons.download_done_rounded), label: 'More'),
         ],
+        currentIndex: _selectedIndex,
+        unselectedItemColor: Colors.grey[400],
+        selectedItemColor: Colors.white,
+        backgroundColor: dominantColor,
+        onTap: _onItemTapped,
       ),
-    );
-  }
-}
-
-class CustomSliverAppBarDelegate extends SliverPersistentHeaderDelegate {
-  CustomSliverAppBarDelegate(
-      {required this.dominantColor}); // Add this constructor
-
-  final Color dominantColor;
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    double rowOpacity = 1.0 - (shrinkOffset / maxExtent);
-
-    return Container(
-      color: dominantColor,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          AppBar(
-            backgroundColor: Colors.transparent,
-            elevation: 0.0,
-            title: Text('For LEE CHUN'),
-            actions: [
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.cast),
+      backgroundColor: dominantColor,
+      body: CupertinoScrollbar(
+        controller: _controller1,
+        child: CustomScrollView(
+          slivers: [
+            SliverPersistentHeader(
+              pinned: true,
+              delegate:
+                  CustomSliverAppBarDelegate(dominantColor: dominantColor),
+            ),
+            SliverList(
+              delegate: SliverChildBuilderDelegate(
+                childCount: 1,
+                (BuildContext context, int index) {
+                  return Container(
+                    color: dominantColor,
+                    child: Padding(
+                      padding: EdgeInsets.all(20.0),
+                      child: MovieCardW(),
+                    ),
+                  );
+                },
               ),
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.search),
-              ),
-              IconButton(
-                onPressed: () {},
-                icon: const Icon(Icons.person),
-              ),
-            ],
-          ),
-          Expanded(
-            child: Opacity(
-              opacity: rowOpacity,
+            ),
+            SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    InkWell(
-                      onTap: () {
-                        print('TV Shows');
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20.0),
-                          border: Border.all(color: Colors.white, width: 0.5),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 6),
-                          child: Text('TV Shows',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                              )),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    InkWell(
-                      onTap: () {
-                        print('Movies');
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20.0),
-                          border: Border.all(color: Colors.white, width: 0.5),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 6),
-                          child: Text('Movies',
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                              )),
-                        ),
-                      ),
-                    ),
-                    SizedBox(width: 16),
-                    InkWell(
-                      onTap: () {
-                        print('Categories');
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20.0),
-                          border: Border.all(color: Colors.white, width: 0.5),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 6),
-                          child: Row(
-                            children: [
-                              Text('Categories',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 12,
-                                  )),
-                              Icon(Icons.keyboard_arrow_down,
-                                  color: Colors.white, size: 14)
-                            ],
-                          ),
-                        ),
+                padding: const EdgeInsets.only(left: 16, right: 16, bottom: 16),
+                child: Text('Popular on Netflix',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold)),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: SizedBox(
+                width: double.infinity,
+                height: MediaQuery.of(context).size.height / 5,
+                child: CustomScrollView(
+                  scrollDirection: Axis.horizontal,
+                  slivers: [
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          return Padding(
+                              padding: EdgeInsets.only(
+                                  top: 0, bottom: 0, left: 16, right: 8),
+                              child: RecentlyAdd(
+                                imgPath: 'images/cv0${index + 1}.jpeg',
+                              ));
+                        },
+                        childCount: 9,
                       ),
                     ),
                   ],
                 ),
               ),
             ),
-          ),
-        ],
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.only(
+                    left: 16, right: 16, bottom: 16, top: 16),
+                child: Text('Popular on Netflix',
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold)),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: SizedBox(
+                width: double.infinity,
+                height: MediaQuery.of(context).size.height / 5,
+                child: CustomScrollView(
+                  scrollDirection: Axis.horizontal,
+                  slivers: [
+                    SliverList(
+                      delegate: SliverChildBuilderDelegate(
+                        (context, index) {
+                          return Padding(
+                              padding: EdgeInsets.only(
+                                  top: 0, bottom: 0, left: 16, right: 8),
+                              child: RecentlyAdd(
+                                imgPath: 'images/c0${index + 1}.jpeg',
+                              ));
+                        },
+                        childCount: 9,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
-
-  @override
-  double get maxExtent => 150.0;
-
-  @override
-  double get minExtent => kToolbarHeight + 60;
-
-  @override
-  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
-      true;
 }

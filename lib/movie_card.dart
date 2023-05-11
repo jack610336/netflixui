@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:netflix/util.dart';
 
 enum ButtonType {
   play,
@@ -18,11 +19,7 @@ class MovieCardW extends StatelessWidget {
             ),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(10.0),
-              child: Image(
-                image: AssetImage(
-                  'images/lab.jpeg',
-                ),
-              ),
+              child: Image(image: Util.mainVideoPic),
             )),
       ),
       Positioned(
